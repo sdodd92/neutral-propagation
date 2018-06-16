@@ -176,14 +176,13 @@ void propagate(lineage startline, size_t *mutlist, int gencount, size_t genome_s
                 }
             // increment the count of individuals
             ++memcount;
-            printf("memcount is now set to %d\n", memcount);
         
         }   
         
         //update the global count of lineages
         linecount += newlines;
         
-        size_t poptemp = *popsize;
+        
     *popsize += memcount;
     *mutcount += mutcounter;
         
@@ -209,14 +208,16 @@ int main(int argc, char** argv) {
     
     size_t pop_count;
     size_t mut_count;
-    long gen_count = 3;
+    long unsigned int gen_count ;
     double mut_rate;
     double prop_rate;
     int c;
     char *argtail;
     char *infile = "/dev/stdin";
     char *outfile = "/dev/stdout";
-    size_t genomesize = 0;
+    long unsigned int genomesize = 0;
+    
+//        printf("genome is of size %d", gen_count);
     
     pop_count=0;
     mut_count=0;
@@ -239,7 +240,7 @@ int main(int argc, char** argv) {
                 outfile = optarg;
                 break;
             case 's':
-                sscanf(optarg, "%lf", &genomesize);
+                sscanf(optarg, "%lu", &genomesize);
                 break;
             default:
                 abort();
@@ -247,12 +248,11 @@ int main(int argc, char** argv) {
     
     printf("infile to be read from %s\n", infile);
     
-    int *genome;
+    unsigned int *genome;
     
     if (genomesize > 0) { //if genome size is manually specified create a binary genome
         
-        genome = malloc(sizeof(int)*genomesize);
-        
+        genome = malloc(sizeof(unsigned int)*genomesize);
         //populate the binary genome randomly
         for (int i=0; i<genomesize; ++i)
             *(genome + i) = rand() % 2;
@@ -266,17 +266,17 @@ int main(int argc, char** argv) {
     
     //write the final output to a CSV
     FILE *output = fopen(outfile, "w");
-    fprintf(output,"POS,FREQ\n");
-    for (int i=0;i<genomesize;++i) {
-        double mutfreq = *(genome + i)/pop_count;
-        int pos = i + 1;
-        if (*(genome + i) > 0) 
-            fprintf(output,"%d,%.4f\n", pos, mutfreq);
+    fprintf(output,"POS,COUNT,FREQ\n");
+    for (size_t i=0;i<genomesize;++i) {
+        double mutfreq = (float)*(mutlocus + i)/pop_count;
+        size_t pos = i + 1;
+        if (*(mutlocus + i) > 0) 
+            fprintf(output,"%lu,%lu,%f\n", pos, *(mutlocus + i),mutfreq);
     }
     
     
     
-    printf("Final Population has %d individuals and %d total mutations after %d generations\n", 
+    printf("Final Population has %lu individuals and %lu total mutations after %lu generations\n", 
             pop_count, 
             mut_count, 
             gen_count
