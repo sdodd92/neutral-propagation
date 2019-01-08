@@ -135,7 +135,7 @@ void propagate(lineage startline, size_t *mutlist, int gencount, size_t genome_s
         size_t newlines = 0;
         lineage *newline;
         
-
+        // loop over all lineages in the population
         printf("starting generation %d:\n",g);
          for (size_t l=0;l<linecount;++l) {
              
@@ -144,12 +144,14 @@ void propagate(lineage startline, size_t *mutlist, int gencount, size_t genome_s
             
             (line+l)->count = 0;
             
+            //loop over all resulting individuals from the given lineage
                 for (long m=0;m<base_size;++m) {
                     
                     //draw number of mutation events from binomial distribution
                     unsigned int event_count = bin_dist(mut_rate, genome_size);
                     
                     if (event_count ==  0)
+                        // if no mutation event, the current lineage has another member
                          ++(line+l)->count;
                     else
                     
