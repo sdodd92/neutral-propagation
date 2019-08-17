@@ -1,6 +1,6 @@
 /* 
  * File:   main.c
- * Author: sam
+ * Author: Samuel Dodd
  *
  * Created on 17 September 2017, 14:34
  */
@@ -84,7 +84,7 @@ void mutate(lineage *line, int lineid, int linecount, int newlines) {
 
 }
 
-unsigned int bin_dist(double p, size_t n) {
+unsigned int binom_dist(double p, size_t n) {
     
     double log_q = log(1.0 - p);
     unsigned int x = 0;
@@ -148,7 +148,7 @@ void propagate(lineage startline, size_t *mutlist, int gencount, size_t genome_s
                 for (long m=0;m<base_size;++m) {
                     
                     //draw number of mutation events from binomial distribution
-                    unsigned int event_count = bin_dist(mut_rate, genome_size);
+                    unsigned int event_count = binom_dist(mut_rate, genome_size);
                     
                     if (event_count ==  0)
                         // if no mutation event, the current lineage has another member
@@ -206,7 +206,7 @@ int main(int argc, char** argv) {
 
     srand48(time(NULL));
     
-    lineage seed;
+    lineage gen_0;
     
     size_t pop_count;
     size_t mut_count;
@@ -264,7 +264,7 @@ int main(int argc, char** argv) {
     //zero-initalize [**SIMPLE**] mutation list
     size_t* mutlocus = calloc(genomesize, sizeof(size_t));
     
-    propagate(seed, mutlocus, gen_count, genomesize, mut_rate, prop_rate, &pop_count, &mut_count);
+    propagate(gen_0, mutlocus, gen_count, genomesize, mut_rate, prop_rate, &pop_count, &mut_count);
     
     //write the final output to a CSV
     FILE *output = fopen(outfile, "w");
